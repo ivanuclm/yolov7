@@ -252,39 +252,6 @@ def train(hyp, opt, device, tb_writer=None):
                                             hyp=hyp, augment=True, cache=opt.cache_images, rect=opt.rect, rank=rank,
                                             world_size=opt.world_size, workers=opt.workers,
                                             image_weights=opt.image_weights, quad=opt.quad, prefix=colorstr('train: '))
-    
-    # # Se ha añadido esto (print(f"Ignorada: {path}")) data_dict['names'] ya tiene los nombres de clases (desde data.yaml)
-    class_names = data_dict['names']
-    
-    # Inicializamos contadores
-    img_per_class = defaultdict(list)  # clase → lista de imágenes que contienen esa clase
-    imgs_usadas = set()
-    imgs_ignoradas = []
-    
-    # Recorremos todas las etiquetas
-    for img_path, label_data in zip(dataset.img_files, dataset.labels):
-        if label_data is None or len(label_data) == 0:
-            imgs_ignoradas.append(img_path)
-            continue
-    
-        imgs_usadas.add(img_path)
-        for row in label_data:
-            class_id = int(row[0])
-            class_name = class_names[class_id]
-            img_per_class[class_name].append(img_path)
-    
-    # Mostrar resultados
-    print("\n📊 Imágenes usadas por clase:")
-    for class_name in sorted(class_names):
-        used_imgs = set(img_per_class[class_name])
-        print(f"{class_name}: {len(used_imgs)} imágenes")
-    
-    print(f"\n🧾 Total de imágenes usadas: {len(imgs_usadas)}")
-    print(f"🚫 Imágenes ignoradas (sin etiquetas válidas): {len(imgs_ignoradas)}")
-    
-    # Opcional: mostrar lista de imágenes ignoradas
-    for path in imgs_ignoradas:
-        print(f"Ignorada: {path}")
 
     mlc = np.concatenate(dataset.labels, 0)[:, 0].max()  # max label class
     nb = len(dataloader)  # number of batches
