@@ -252,6 +252,18 @@ def train(hyp, opt, device, tb_writer=None):
                                             hyp=hyp, augment=True, cache=opt.cache_images, rect=opt.rect, rank=rank,
                                             world_size=opt.world_size, workers=opt.workers,
                                             image_weights=opt.image_weights, quad=opt.quad, prefix=colorstr('train: '))
+    print("Vamos a ver que tenemos en el dataset:")
+    # dataset.labels es una lista de arrays de shape (n_objects, 5) por imagen: [class_id, x_center, y_center, w, h]
+    all_labels = np.concatenate(dataset.labels, axis=0) if len(dataset.labels) else np.array([])
+    
+    if all_labels.size:
+        class_counts = np.bincount(all_labels[:, 0].astype(int))
+        for class_id, count in enumerate(class_counts):
+            print(f"Clase {class_id} ({dataset.names[class_id]}): {count} objetos")
+    else:
+        print("No se encontraron etiquetas.")
+
+    # Hasta aqui
 
     mlc = np.concatenate(dataset.labels, 0)[:, 0].max()  # max label class
     nb = len(dataloader)  # number of batches
