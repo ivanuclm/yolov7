@@ -259,7 +259,7 @@ def train(hyp, opt, device, tb_writer=None):
     if all_labels.size:
         class_counts = np.bincount(all_labels[:, 0].astype(int))
         for class_id, count in enumerate(class_counts):
-            print(f"Clase {class_id} ({dataset.names[class_id]}): {count} objetos")
+            print(f"Clase {class_id} ({names[class_id]}): {count} objetos")
     else:
         print("No se encontraron etiquetas.")
 
